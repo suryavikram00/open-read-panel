@@ -1,0 +1,31 @@
+<div class="pos-f-t fixed-top">
+
+    <nav class="navbar  navbar-dark bg-dark d-flex ">
+        <div class="px-1">
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="px-1 ">
+            <a class="navbar-brand" routerLink="/panel-dashboard"><span class="font-weight-normal">Ncr Panel</span>
+            </a>
+        </div>
+        <div class="mr-auto">
+           
+        </div>        
+
+    </nav>
+    <div class="collapse " id="navbarToggleExternalContent">
+        <div class="bg-dark p-2 d-inline-block" data-toggle="collapse" data-target="#navbarToggleExternalContent"
+            aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+
+            <div class="text-light">                
+                <!-- <div class="dropdown-divider"></div> -->
+                <a class="dropdown-item nav-link text-light" routerLink="/panel-dashboard" routerLinkActive="active">Nutty Crunch</a>
+            </div>
+        </div>
+    </div>
+    <mat-progress-bar mode="indeterminate" *ngIf="loading" color = "warn"></mat-progress-bar>
+</div>
