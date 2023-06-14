@@ -49,7 +49,7 @@ export class GenericTableComponent {
   }
 
   ngAfterViewInit() {
-    console.log(' in view ' + this.paginatedData);   
+    console.log(' in view ' + this.paginatedData);
   }
 
   public loadDataSource() {
@@ -65,9 +65,10 @@ export class GenericTableComponent {
       return;
     }
     this.displayedColumns = [];
-    this.displayedColumns = this.tableMetaData.tableColumn.length > 0 ? Object.keys(this.paginatedData.content[0])
-      .filter(key => this.tableMetaData.tableColumn.includes(key))
-      : Object.keys(this.paginatedData.content[0]);
+    // this.displayedColumns = this.tableMetaData.tableColumn.length > 0 ? Object.keys(this.paginatedData.content[0])
+    //   .filter(key => this.tableMetaData.tableColumn.includes(key))
+    //   : Object.keys(this.paginatedData.content[0]);
+    this.displayedColumns = Object.keys(this.paginatedData.content[0]);
 
     console.log('columns :: ' + this.displayedColumns);
     if (!this.loadContentUsingFilter) {
@@ -136,7 +137,7 @@ export class GenericTableComponent {
     } else {
       this.loadContentUsingFilter = false;
       // reload the paginated from the configuration
-      this.tableMetaData = this.dbTableConfig.getTableMetaDataByApi(this.tableMetaData.tableApiName);
+      this.tableMetaData = DbTableConfig.getTableMetaDataByApi(this.tableMetaData.tableApiName);
       // if no value is being inputed then call the submit event function      
       this.getData(this.currentPageNo, this.currentPageSize);
       if (this.dataSource != null && this.dataSource.paginator != null) {
@@ -212,31 +213,31 @@ export class GenericTableComponent {
     record.editMode = !record.editMode;
   }
 
-  saveChanges(record: any): void {
-    console.log(record);
-    if (this.tableMetaData.accreditionEnabled) {
-      this.submitForAccredtion(record, (data: any) => {
-        if (data.status === 'FAILURE') {
-          record.editMode = true;
-        } else {
-          record.editMode = false;
-          this.loadDataSource();
-        }
-      });
-    } else {
-      this.updateRecord(record);
-    }
+  // saveChanges(record: any): void {
+  //   console.log(record);
+  //   if (this.tableMetaData.accreditionEnabled) {
+  //     this.submitForAccredtion(record, (data: any) => {
+  //       if (data.status === 'FAILURE') {
+  //         record.editMode = true;
+  //       } else {
+  //         record.editMode = false;
+  //         this.loadDataSource();
+  //       }
+  //     });
+  //   } else {
+  //     this.updateRecord(record);
+  //   }
 
-  }
+  // }
 
   private submitForAccredtion(record: any, callback: (data: any) => void) {
 
-    let tableMetaData: TableMetaData = this.dbTableConfig.getTableMetaDataByApi('acc-request');
+    let tableMetaData: TableMetaData = DbTableConfig.getTableMetaDataByApi('acc-request');
     const originalRecord = this.paginatedData.content.find(item => item.id === record.id);
     delete record.editMode;
     delete originalRecord.editMode;
     let accRequest = {
-      "tag": this.tableMetaData.tableName,
+      "tag": this.tableMetaData.tableApiName,
       "uniqueIdentifier": record.id,
       "newValue": JSON.stringify(record),
       "existingValue": JSON.stringify(originalRecord),
@@ -285,7 +286,7 @@ export class GenericTableComponent {
         return;
       }
       // reload the paginated from the configuration
-      this.tableMetaData = this.dbTableConfig.getTableMetaDataByApi(this.tableMetaData.tableApiName);
+      this.tableMetaData = DbTableConfig.getTableMetaDataByApi(this.tableMetaData.tableApiName);
       // if no value is being inputed then call the submit event function
       this.getData(this.currentPageNo, this.currentPageSize);
       if (this.dataSource != null && this.dataSource.paginator != null) {
@@ -314,17 +315,17 @@ export class GenericTableComponent {
     }
   }
 
-  public isEditable(key: any): boolean {
-    return key !== 'editMode' && this.tableMetaData.create.column.includes(key);
-  }
+  // public isEditable(key: any): boolean {
+  //   return key !== 'editMode' && this.tableMetaData.create.column.includes(key);
+  // }
 
-  public canShowSearchField(key: any): boolean {
-    return this.tableMetaData.searchColumn.includes(key);
-  }
+  // public canShowSearchField(key: any): boolean {
+  //   return this.tableMetaData.searchColumn.includes(key);
+  // }
 
-  public canShowTableField(key: any): boolean {
-    return this.tableMetaData.tableColumn.includes(key);
-  }
+  // public canShowTableField(key: any): boolean {
+  //   return this.tableMetaData.tableColumn.includes(key);
+  // }
 
 
 }

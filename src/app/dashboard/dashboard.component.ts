@@ -10,19 +10,26 @@ import { ApiService } from '../service/api.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  
+
   canLoadGenericTable: Boolean;
-  tableMetaData : TableMetaData[];
+  tableMetaData!: TableMetaData[];
   selectedTableMetaData!: TableMetaData;
-  selectedTableApiName : string;
+  selectedTableApiName: string;
 
 
   @ViewChild(GenericTableComponent, { static: true }) genericTableComponent!: GenericTableComponent;
 
-  constructor(private api: ApiService, private dbTableConfig : DbTableConfig) {
+  constructor(private api: ApiService, private dbTableConfig: DbTableConfig) {
     this.selectedTableApiName = "";
     this.canLoadGenericTable = false;
-    this.tableMetaData = dbTableConfig.getTableMetaDataArray();
+    this.api.httpGet("/table-meta-data")
+      .subscribe((res: any) => {
+        console.log("result data :: " + res.objectList);
+        DbTableConfig.tableMetaDataArray = res.objectList;
+        console.log("data :: " + DbTableConfig.getTableMetaDataArray());
+        this.tableMetaData = DbTableConfig.getTableMetaDataArray();
+        this.tableMetaData = res.objectList;
+      })
   }
 
   ngOnInit(): void {
@@ -30,22 +37,36 @@ export class DashboardComponent implements OnInit {
 
   showTableBtnClick() {
     this.canLoadGenericTable = true;
-    this.genericTableComponent.tableMetaData = this.selectedTableMetaData;    
-    console.log(this.selectedTableMetaData.toString());        
+    this.genericTableComponent.tableMetaData = this.selectedTableMetaData;
+    console.log(this.selectedTableMetaData.toString());
     this.loadJsonListFromApi();
   }
 
-  onChange(){    
-    this.selectedTableMetaData = this.dbTableConfig.getTableMetaDataByApi(this.selectedTableApiName);
+  onChange() {
+    this.selectedTableMetaData = DbTableConfig.getTableMetaDataByApi(this.selectedTableApiName);
   }
 
-  loadJsonListFromApi(): any[] {    
+  loadJsonListFromApi(): any[] {
     let result: any[] = [];
     let isPaged: boolean = this.selectedTableMetaData.serverPaginationEnabled;
-    this.api.getPage("/" + this.selectedTableMetaData.tableApiName, 0, 5, this.selectedTableMetaData.serverPaginationEnabled)
+    this.api.getPage("/" + this.selectedTableMetaData.tableApiName, 0, 5, isPaged === undefined ? true : isPaged)
       .subscribe((res: any) => {
         result = res.pageData;
-        this.genericTableComponent.paginatedData = res.pageData;   
+
+        DbTableConfig.getActualTableMetaDataByApi(this.selectedTableMetaData.tableApiName).serverPaginationEnabled
+          = res.pageData.totalElements > DbTableConfig.numberOfRecordsForPagination ? true : false;
+        if (isPaged === undefined
+          // && res.pageData.totalElements < DbTableConfig.numberOfRecordsForPagination
+        ) {
+          this.genericTableComponent.tableMetaData = DbTableConfig.getActualTableMetaDataByApi(this.selectedTableMetaData.tableApiName);
+          this.selectedTableMetaData = DbTableConfig.getTableMetaDataByApi(this.selectedTableApiName);
+          this.loadJsonListFromApi();
+          return;
+        }
+        this.genericTableComponent.tableMetaData = DbTableConfig.getActualTableMetaDataByApi(this.selectedTableMetaData.tableApiName);
+        this.selectedTableMetaData = DbTableConfig.getTableMetaDataByApi(this.selectedTableApiName);
+
+        this.genericTableComponent.paginatedData = res.pageData;
         this.genericTableComponent.loadContentUsingFilter = false;
         this.genericTableComponent.loadDataSource();
       })

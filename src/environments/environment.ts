@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   // apiEndpoint: window.location.protocol + '//' + window.location.hostname + ':8086/nmncr'
-  apiEndpoint: window.location.protocol + '//' + window.location.hostname + ':8081/v1'
+  apiEndpoint: window.location.protocol + '//' + window.location.hostname + ':8081/nmncr/magnum/open-read/v1'
 };
 
 /*

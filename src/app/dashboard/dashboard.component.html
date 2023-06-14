@@ -8,7 +8,7 @@
                 [(ngModel)]="selectedTableApiName" (change)="onChange()">
                 <option value="" selected>Select Table</option>
                 <option *ngFor="let eachMetaData of tableMetaData" [value]="eachMetaData.tableApiName">
-                    {{eachMetaData.tableviewName}}
+                    {{eachMetaData.tableApiName}}
                 </option>
             </select>
         </div>
